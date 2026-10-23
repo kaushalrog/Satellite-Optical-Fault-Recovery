@@ -1,4 +1,4 @@
-test_invalid_horizon_fails_closed (test_extension.HorizonAndUnits.test_invalid_horizon_fails_closed) ... ERROR
+test_invalid_horizon_fails_closed (test_extension.HorizonAndUnits.test_invalid_horizon_fails_closed) ... ok
 test_late_window_refused (test_extension.HorizonAndUnits.test_late_window_refused) ... ok
 test_nonfinite_bound_stops_monitor (test_extension.HorizonAndUnits.test_nonfinite_bound_stops_monitor) ... ok
 test_rate_units_refused (test_extension.HorizonAndUnits.test_rate_units_refused) ... ok
@@ -21,19 +21,7 @@ test_uncertain_power_does_not_unlock_acquisition (test_supervisor.SupervisorTest
 test_units_required (test_supervisor.SupervisorTest.test_units_required) ... ok
 test_unverified_contract_refused (test_supervisor.SupervisorTest.test_unverified_contract_refused) ... ok
 
-======================================================================
-ERROR: test_invalid_horizon_fails_closed (test_extension.HorizonAndUnits.test_invalid_horizon_fails_closed)
 ----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/Users/kaush/Downloads/Satellite_Optical_Recovery_Final/research/v7/tests/test_extension.py", line 11, in test_invalid_horizon_fails_closed
-    e=self.e();e.horizon_samples='700';self.assertEqual(authorize([2.]*144,.02,2.88,2.,1.,e)['permission'],'refuse')
-                                                        ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/kaush/Downloads/Satellite_Optical_Recovery_Final/research/v7/supervisor.py", line 40, in authorize
-    if isinstance(lower,(list,tuple)) and len(lower)>evidence.horizon_samples:reasons.append('envelope horizon shorter than probe')
-                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: '>' not supported between instances of 'int' and 'str'
+Ran 22 tests in 0.000s
 
-----------------------------------------------------------------------
-Ran 22 tests in 0.001s
-
-FAILED (errors=1)
+OK

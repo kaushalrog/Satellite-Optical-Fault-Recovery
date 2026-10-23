@@ -24,7 +24,7 @@
   "combined_matched_records": 14400,
   "new_steps_replayed": 5040000,
   "combined_steps_replayed": 10080000,
-  "tests": 21,
+  "tests": 22,
   "new_trace_chunks": 36,
   "missing_historical_files": [],
   "physical_validation": false,

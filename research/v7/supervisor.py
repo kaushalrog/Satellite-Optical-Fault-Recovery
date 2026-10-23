@@ -37,7 +37,7 @@ def authorize(lower,dt,duration,pm,threshold,evidence,now=0.,deployment='simulat
     if not (isfinite(pm) and pm>=0 and isfinite(threshold) and threshold>0):reasons.append('invalid power')
     if not (0<evidence.delta<1 and isinstance(evidence.horizon_samples,int) and evidence.horizon_samples>=1):reasons.append('invalid mission envelope')
     if not all(isfinite(v) and v>=0 for v in (service_budget,acquisition_budget)):reasons.append('invalid outage budget')
-    if isinstance(lower,(list,tuple)) and len(lower)>evidence.horizon_samples:reasons.append('envelope horizon shorter than probe')
+    if not reasons and isinstance(lower,(list,tuple)) and len(lower)>evidence.horizon_samples:reasons.append('envelope horizon shorter than probe')
     if not reasons and (now<0 or now+duration>evidence.horizon_samples*dt+1e-9):reasons.append('probe exceeds remaining mission horizon')
     if reasons:return {'permission':'refuse','reasons':reasons,'recovery_authorized':False}
     k=NormalDist().inv_cdf(1-evidence.delta/(2*evidence.channels*evidence.horizon_samples));eta=k*evidence.relative_power_sigma
