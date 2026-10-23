@@ -1,0 +1,18 @@
+{
+  "Satellite_Optical_Research_V7_Code_and_Reports.zip": {
+    "bytes": 18099860,
+    "sha256": "5cc6ea29a1e1f540f70285a03ee6e9d494aa6f070780d78a4708c521e73329c9"
+  },
+  "Satellite_Optical_Research_V7_Raw_Data.zip": {
+    "bytes": 1321238634,
+    "sha256": "79945c97c5d958192d572e5ddbacca37c5c78cbbfd4c6e91f53b1682b38f0bbf"
+  },
+  "Optical_Fault_Diagnosis_V7_Regular_Paper_Candidate.pdf": {
+    "bytes": 292986,
+    "sha256": "4ba3987827aac1139a07c5cb9d4f46118f7b1fa8df0fdd473910173a302103bf"
+  },
+  "Optical_Fault_Diagnosis_V7_Supplement.pdf": {
+    "bytes": 127212,
+    "sha256": "f8cc0560d6cd1c1a2f66e949e121bb25eca4db1300ba5b44d4fe23c6b7cd681d"
+  }
+}
