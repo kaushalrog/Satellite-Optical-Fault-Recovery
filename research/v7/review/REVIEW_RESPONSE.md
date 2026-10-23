@@ -24,7 +24,7 @@ V7 rebuilds V6 as a regular-paper **candidate** with a complete technical narrat
 
 ## Supervisor change versus experiment
 
-V7 adds remaining-mission-horizon and rate-unit validation and refuses a nonfinite monitor bound. Twenty-one tests pass; all1,421 original UAD authorizations are shadow-replayed using actual start times. This interface improvement does not retroactively modify any recorded plant run. The extension checker changes only its fit-rejection predicate to recognize unfinished probes.
+V7 adds remaining-mission-horizon and rate-unit validation and refuses a nonfinite monitor bound. Twenty-two tests pass; all1,421 original UAD authorizations are shadow-replayed using actual start times. This interface improvement does not retroactively modify any recorded plant run. The extension checker changes only its fit-rejection predicate to recognize unfinished probes.
 
 ## Structure/reference verification
 

@@ -1,5 +1,5 @@
 from pathlib import Path
-import json,hashlib,zipfile,shutil
+import json,hashlib,zipfile,shutil,sys
 H=Path(__file__).resolve().parent;ROOT=H.parents[1];OUT=ROOT/'output'
 def sha(p):
  h=hashlib.sha256()
@@ -25,17 +25,18 @@ with zipfile.ZipFile(code) as z:
  for rel,h in payload.items():assert hashlib.sha256(z.read(rel)).hexdigest()==h,rel
 print('Code payload verified',len(payload),code.stat().st_size,flush=True)
 dest=OUT/'Satellite_Optical_Research_V7_Raw_Data.zip';manifest={str(p.relative_to(ROOT)):sha(p) for p in raw}
-with zipfile.ZipFile(dest,'w',zipfile.ZIP_DEFLATED,compresslevel=1,allowZip64=True) as z:
- z.writestr('V7_RAW_SHA256.json',json.dumps(manifest,indent=2)+'\n')
- for i,p in enumerate(sorted(raw)):
-  z.write(p,p.relative_to(ROOT))
-  if (i+1)%6==0:print('Raw chunks',i+1,'/',len(raw),flush=True)
-with zipfile.ZipFile(dest) as z:
- for rel,h in manifest.items():
-  actual=hashlib.sha256()
-  with z.open(rel) as f:
-   for b in iter(lambda:f.read(1048576),b''):actual.update(b)
-  assert actual.hexdigest()==h,rel
+if '--code-only' not in sys.argv:
+ with zipfile.ZipFile(dest,'w',zipfile.ZIP_DEFLATED,compresslevel=1,allowZip64=True) as z:
+  z.writestr('V7_RAW_SHA256.json',json.dumps(manifest,indent=2)+'\n')
+  for i,p in enumerate(sorted(raw)):
+   z.write(p,p.relative_to(ROOT))
+   if (i+1)%6==0:print('Raw chunks',i+1,'/',len(raw),flush=True)
+ with zipfile.ZipFile(dest) as z:
+  for rel,h in manifest.items():
+   actual=hashlib.sha256()
+   with z.open(rel) as f:
+    for b in iter(lambda:f.read(1048576),b''):actual.update(b)
+   assert actual.hexdigest()==h,rel
 files=[code,dest]
 for src,name in [('paper.pdf','Optical_Fault_Diagnosis_V7_Regular_Paper_Candidate.pdf'),('supplement.pdf','Optical_Fault_Diagnosis_V7_Supplement.pdf')]:
  p=OUT/'pdf'/name;shutil.copy2(H/src,p);files.append(p)

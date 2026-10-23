@@ -13,7 +13,7 @@ This is a 12-page regular-paper candidate with four-page supplement, not a submi
 - R1midpoint: UAD594accepted/600 (26accepted-radius misses), guard0, KF600(15misses). Mean angular excitation UAD8.331 versusKF74.747μrad²s. ES provides tracking, no diagnostic fits.
 - R2midpoint: guard41accepted whileUAD0; KF528completed acceptances plus30incomplete; ES also30incomplete. All methods have zero sampled outage in these selected settings.
 - Separate calculation replays5,040,000new actuator steps (max absolute state error1.3553e-20); combined with preserved original audit10,080,000steps. Shadow interface replays original UAD authorizations, not physical operation.
-- Twenty-one tests cover refusal, remaining mission time, rate units, monitor bounds and statistical tails.
+- Twenty-two tests cover refusal, remaining mission time, rate units, monitor bounds and statistical tails.
 
 ## Reproduction
 
