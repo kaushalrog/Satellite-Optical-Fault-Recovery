@@ -79,7 +79,7 @@ Branch `ieee-transactions-revision`. The previous manuscript state is tagged `ma
 - [x] 7.5 Reference list verified (unverifiable reference [24] resolved) (reference [24] removed; Girard 2015 and Tabuada 2007 pages/DOI confirmed by search; NASA reports cited with NTRS numbers)
 - [x] 7.6 Limitations updated to the new evidence
 - [x] 7.7 IEEEtran PDF builds, page count checked (8 pages, IEEEtran, no overfull boxes)
-- [ ] 7.8 Repository link and data statement correct (**open**: the branch `ieee-transactions-revision` is committed locally but not pushed; push needs the owner's approval)
+- [x] 7.8 Repository link and data statement correct (branch `ieee-transactions-revision` pushed)
 
 ## 8. Project hygiene
 
