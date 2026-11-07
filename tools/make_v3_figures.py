@@ -4,7 +4,8 @@ import csv,sys
 import numpy as np
 import matplotlib;matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-ROOT=Path(__file__).resolve().parents[1];R3=ROOT/'results/v3';R2=ROOT/'results/v2'
+ROOT=Path(__file__).resolve().parents[1];import os
+R3=ROOT/('results/'+os.environ.get('V3_DIR','v3'));R2=ROOT/'results/v2';RT=ROOT/'results/v3'
 DEST=Path(sys.argv[1]);DEST.mkdir(parents=True,exist_ok=True)
 plt.rcParams.update({'font.size':7,'font.family':'serif','axes.linewidth':.6,'lines.linewidth':1.0,'pdf.fonttype':42})
 COL={'periodic':'#999999','eo_chain':'#7a5195','eo_star':'#0072b2','zoh_star':'#e69f00','dynamic_star':'#009e73','self_star':'#cc79a7','clac':'#d55e00','gat_fixed':'#56b4e9','gat':'#b2182b'}
@@ -32,7 +33,7 @@ fig.tight_layout(pad=.3);fig.savefig(DEST/'fig_v3_tradeoff.pdf');plt.close(fig)
 # tolerance dial (development seeds)
 fig,ax=plt.subplots(figsize=(3.4,2.5))
 for name,col,lab in [('gat',COL['gat'],'GAT'),('gat_fixed',COL['gat_fixed'],'GAT fixed')]:
-    d=[r for r in csv.DictReader(open(R3/f'tuning_{name}.csv'))]
+    d=[r for r in csv.DictReader(open(RT/f'tuning_{name}.csv'))]
     for ov in sorted({(r['standby_s'],r['report_s']) for r in d}):
         s=[r for r in d if (r['standby_s'],r['report_s'])==ov]
         if name=='gat' and ov!=('6','2'):continue

@@ -1,7 +1,8 @@
-function trials=run_v3_evaluation(seeds,caseIdx,outName)
+function trials=run_v3_evaluation(seeds,caseIdx,outName,outDir)
 % 17 conditions x 10 methods x seeds. Held-out seeds 401-420 (never used before). Needs results/v3/lock.json.
 root=fileparts(mfilename('fullpath'));addpath(fullfile(root,'src'));
-out=fullfile(root,'results','v3');if ~exist(out,'dir'),mkdir(out);end
+if nargin<4,outDir='v3';end
+out=fullfile(root,'results',outDir);if ~exist(out,'dir'),mkdir(out);end
 if strcmp(outName,'heldout'),assert(isfile(fullfile(out,'lock.json')),'Freeze the protocol before the held-out run');end
 cases={'healthy','pointing_single','pointing_multilink','pointing_all_links','actuator_isolated',...
     'attenuation_severe','combined','beam_mismatch','network_transfer','jitter_high','slow_acquisition',...

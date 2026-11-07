@@ -1,0 +1,268 @@
+% Numbers in Sections VII-VIII come from results/v3_fix1/*.csv of the Satellite_Optical_GitHub_Publish project
+% (tools/analyze_v3.py, tools/make_v3_figures.py). The optical-layer section is shared with the earlier version.
+\documentclass[journal]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{cite}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\DeclareMathOperator{\Log}{Log}
+\DeclareMathOperator{\Exp}{Exp}
+\newcommand{\urad}{\,\mu\text{rad}}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+
+\begin{document}
+
+\title{Guaranteed-Accuracy Triggering for Spacecraft Attitude Coordination over Optical Crosslinks}
+
+\author{C.~Rishitha, Y.~Karthikeya, A.~Tyagi, S.~Kaushal, and R.~Satheesh%
+\thanks{The authors are with the Amrita School of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore, India.}}
+
+\maketitle
+
+\begin{abstract}
+Event-triggered and self-triggered schemes decide when a spacecraft should transmit by comparing a state error with a threshold chosen for stability or by tuning. A receiver still cannot tell how wrong its neighbour-derived target may be after a silence. We propose a simpler contract: the designer states a tolerance $\varepsilon$ on the \emph{communication-induced} error of a follower's target, and each sender transmits just before the receiver's certified error would reach $\varepsilon$. The certified error is an online bound that travels with each packet and grows with its age using only the rate and acceleration limits of the command generator. It holds under arbitrary delay, loss and outage. The same bound lets a follower re-select its parent. We call the result Guaranteed-Accuracy Triggering (GAT). In a four-spacecraft simulation with a physically modelled optical layer (link budget validated against the published NASA TBIRD budget to 0.07~dB, receiver noise, Reed--Solomon coding, lock and acquisition), ten methods are compared on 3{,}400 runs on fresh seeds in 17 conditions, three of which were never used before. Without re-selection, GAT sends 73.6\% less payload than a tuned event trigger (95\% CI: $[71.7,75.3]\%$ less) at 4.0\% higher pair error (CI $[1.6,6.3]\%$). With re-selection it cuts the pair error of the budget-matched baselines (45.1\% lower, CI $[39.8,49.9]\%$) at 34.9\% less payload, but is 30.7\% worse than an event trigger when nothing fails, and it does not beat that trigger on the three unseen conditions. Neither the attitude nor the rate certificate was violated in 1{,}020 trajectories. Closed-loop stability is not proved, and the evaluation is simulation-only.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Spacecraft attitude coordination, event-triggered control, self-triggered control, optical inter-satellite links, certified error bound, networked control.
+\end{IEEEkeywords}
+
+\section{Introduction}
+Optical crosslinks couple communication to attitude: body motion changes terminal pointing, pointing changes received power, and power decides whether packets arrive~\cite{click}. In leader-following coordination only one spacecraft receives the moving command, so followers extrapolate neighbour states between packets~\cite{cai2014,dimarogonas2009}. Event-triggered and self-triggered rules save traffic~\cite{tabuada2007,heemels2012,girard2015,mazo2010,xie2023,xie2024taes,wang2021,jia2023}, but their thresholds are tied to a stability analysis or tuned, and the receiver is not told how large its error can be.
+
+This paper replaces the threshold by a contract. The designer chooses a tolerance $\varepsilon$ in radians. Each sender computes, from the bounds it is sending, the age at which the receiver's certified error reaches $\varepsilon$ and transmits just before. Nothing is monitored. The contributions are:
+\begin{enumerate}
+\item \textbf{A certificate} (Lemma~\ref{lem:ext}, Theorem~\ref{thm:cert}): an online bound on each follower's attitude and rate error against the true desired state, carried in packets and grown with message age. It holds for arbitrary delays, losses, outages and parent choices, and does not assume closed-loop stability.
+\item \textbf{GAT} (Section~\ref{sec:gat}): tolerance-driven transmission with a stated guarantee (Proposition~\ref{prop:gat}), plus parent re-selection by the smallest certified bound. It has one design parameter with a physical unit.
+\item \textbf{A physical optical layer validated against published NASA data} (Section~\ref{sec:optics}): link budget, receiver, coding, lock and terminal model. The budget code reproduces the NASA/MIT-LL TBIRD downlink budget to 0.07~dB.
+\item \textbf{A strict evaluation} (Sections~\ref{sec:protocol}--\ref{sec:results}): ten methods, 17 conditions and 3{,}400 runs on seeds never used before. Three conditions were never used in any tuning or earlier run. We also report where GAT loses.
+\end{enumerate}
+The study is simulation-only and uses adapted versions of published triggers. Section~\ref{sec:limits} lists what is not shown.
+
+\section{Related Work}
+\emph{Attitude coordination and triggered communication.} Leader-following and synchronisation laws for rigid bodies are well studied~\cite{ren2007,sarlette2009,abdessameud2009,mayhew2011,dimarogonas2009,cai2014}. Event- and self-triggered attitude and formation schemes with delays, saturation, faults or learning terms appear in~\cite{wang2021,xie2023,xie2024asr,jia2023,xie2024taes}, building on static event triggering~\cite{tabuada2007}, periodic and self-triggered variants~\cite{heemels2013,mazo2010,heemels2012,donkers2012} and the dynamic trigger with an internal variable~\cite{girard2015}. These works prove stability of their own closed loops. In all of them the receiver holds or extrapolates the last message, and the threshold is a stability or tuning quantity. To the best of our knowledge, within the literature we reviewed, none uses a receiver-side error bound valid for any sender and any parent to set the \emph{send time} directly from a user tolerance and to re-select among neighbours. This is a statement about the sources we found, not a proof of absence, and the self-triggered idea of computing the next time from a model-based bound~\cite{mazo2010,heemels2012} is close in spirit; the difference is the bound (command-class constants only, valid under loss) and the use of one bound for both timing and routing.
+
+\emph{Networked control.} Delays, losses and intermittent observations are covered in~\cite{hespanha2007,zhang2001,sinopoli2004,olfati2007,nowzari2019}. Our certificate bounds a different quantity, the error of the neighbour-derived target.
+
+\emph{Optical links.} Surveys cover acquisition, tracking and pointing~\cite{kaymak2018,kaushal2017,toyoshima2005}, and pointing-error and outage analyses~\cite{farid2007,khalighi2014}. NASA and MIT Lincoln Laboratory published detailed on-orbit results for the TBIRD downlink~\cite{schieler2023,schieler2023icsos}; we use them to calibrate the model and check the budget arithmetic, not to claim that a 1~km crosslink behaves like a 930~km downlink.
+
+\section{System Model}
+\subsection{Attitude, Reference and Information Structure}
+For spacecraft $i\in\{1,\dots,4\}$, $q_i$ is a scalar-first unit quaternion, $R(q)$ its rotation matrix, $\otimes$ the quaternion product, $\Exp,\Log$ the rotation-vector maps, and
+\begin{align}
+\dot q_i &= \tfrac12 q_i\otimes[0,\omega_i^T]^T,\\
+J\dot\omega_i &= D_{\eta_i}u_i+d_i-\omega_i\times J\omega_i,
+\end{align}
+with $J=\mathrm{diag}(0.030,0.025,0.020)$~kg\,m$^2$, torque bound $0.002$~N\,m per axis, disturbance $d_i$ and diagonal actuator effectiveness $D_{\eta_i}$. The spacecraft sit at the corners of a 1000~m square. The reference $q_r(t)=\Exp(v_r(t))$, $v_r=[.018\sin(.11t+p),\,.012\sin(.07t+.4+p),\,.010\sin(.09t-.2+p)]^T$~rad, has body rate $\omega_r$. Constant offsets $o_i$ give the desired state of spacecraft $i$,
+\begin{equation}
+q_i^\star=q_r\otimes o_i,\qquad \omega_i^\star=R(o_i)^T\omega_r .
+\end{equation}
+Only SC1 receives $q_r$. Followers derive a \emph{target} $(q_{t,i},\omega_{t,i})$ from a delivered neighbour packet. Local feedback is a saturated PD-plus-sliding term with a disturbance estimate~\cite{liu2018}, identical for all methods; its closed loop is not analysed here.
+
+\begin{assumption}[Command class]\label{as:ref}
+$\|\omega_r(t)\|\le\bar\omega$ and $\|\dot\omega_r(t)\|\le\bar\alpha$ for all $t$, and $\bar\omega,\bar\alpha$ are known to every spacecraft.
+\end{assumption}
+A dense numerical check over 25 phases and 200~s gives $\max\|\omega_r\|=2.31\times10^{-3}$ and $\max\|\dot\omega_r\|=2.38\times10^{-4}$, so $\bar\omega=2.45\times10^{-3}$~rad/s and $\bar\alpha=2.6\times10^{-4}$~rad/s$^2$ are used (checked numerically, not proved analytically).
+
+\subsection{Packets and Delivery}
+Directed endpoint $a:i\to j$ sends packets containing the sender's quaternion, rate and timestamp and, for the certified methods, two bounds and a parent index. A baseline packet is 64~B and a certified packet 88~B. A packet is lost with the packet-error probability of the optical layer (Section~\ref{sec:optics}), delayed by $0.10+0.10U$~s ($U$ uniform), and accepted only if its timestamp is newer than the cache and the link is locked. There are 32 queue slots per endpoint. All methods see the same random draws on the same seed.
+
+\input{optics_section.tex}
+
+\section{Certificate}\label{sec:cert}
+For spacecraft $i$ define the attitude and transported rate errors against the true desired state,
+\begin{equation}
+\chi_i=\|\Log(q_i^{\star*}\!\otimes q_i)\|,\quad
+\epsilon_i=\|\omega_i-R(q_i)^TR(q_i^\star)\omega_i^\star\|.
+\end{equation}
+Let a packet from $j$ stamped $\tau$ carry $(q_j,\omega_j)$ and bounds $\chi_j\le H$, $\epsilon_j\le W$ at $\tau$. At $t=\tau+a$ spacecraft $i$ forms, with $\rho=o_j^*\otimes o_i$ and horizon $h\ge0$, the target
+\begin{equation}
+\begin{aligned}q_{t}(a)&=q_j\otimes\Exp(\omega_j\min(a,h))\otimes\rho,\\ \omega_{t}&=\begin{cases}R(\rho)^T\omega_j,&a<h\\ 0,&a\ge h.\end{cases}\end{aligned}
+\end{equation}
+For $a<h$ define
+\begin{align}
+E(a)&=e^{\bar\omega a}\big(H(1+\bar\omega a)+Wa+\bar\alpha a^2/2\big),\\
+F(a)&=W+\bar\alpha a+\bar\omega\,(E(a)+H),
+\end{align}
+and for $a\ge h$: $E(a)=E(h)+\bar\omega(a-h)$, $F(a)=\bar\omega$. ($E$ is continuous at $h$; $F$ jumps to $\bar\omega$ because the target rate becomes zero.)
+
+\begin{lemma}[Extrapolation certificate]\label{lem:ext}
+Under Assumption~\ref{as:ref}, the target error satisfies $\|\Log(q_i^{\star*}(t)\otimes q_t(a))\|\le E(a)$ and the target rate error $\|\omega_t-R(q_t)^TR(q_i^\star)\omega_i^\star\|\le F(a)$.
+\end{lemma}
+\begin{proof}
+Write $A(s)=q_j\otimes\Exp(\omega_js)\otimes\rho$, with constant body rate $a_1=R(\rho)^T\omega_j$, and $B(s)=q_i^\star(\tau+s)$ with body rate $a_2(s)=\omega_i^\star(\tau+s)$. Since $o_i=o_j\otimes\rho$, $a_2(0)=R(\rho)^T\omega_j^\star(\tau)$ and $B(s)=q_j^\star(\tau+s)\otimes\rho$. Let $\mathcal E(s)=B(s)^*\otimes A(s)$ and $\theta(s)=\|\Log\mathcal E(s)\|$. The relative body rate of $\mathcal E$ is $a_1-R(\mathcal E)^Ta_2$ and $\theta$ is the distance to the identity in a bi-invariant metric, so $\theta'\le\|R(\mathcal E)a_1-a_2(s)\|$. At $s=0$, $\mathcal E(0)=\rho^*\otimes(q_j^{\star*}\otimes q_j)\otimes\rho$ has $\theta(0)=\chi_j\le H$, and
+\begin{equation}
+\begin{aligned}\|R(\mathcal E(0))a_1-a_2(0)\|&=\|R(q_j)\omega_j-R(q_j^\star)\omega_j^\star\|\\&=\epsilon_j\le W,\end{aligned}
+\end{equation}
+because rotations preserve norms. Put $\delta=R(\mathcal E(0))a_1-a_2(0)$, $\|\delta\|\le W$. For $s>0$,
+\begin{equation}
+\begin{aligned}R(\mathcal E(s))a_1-a_2(s)&=\big[R(\mathcal E(s))R(\mathcal E(0))^T-I\big]a_2(0)\\&\quad+\big[a_2(0)-a_2(s)\big]\\&\quad+R(\mathcal E(s))R(\mathcal E(0))^T\delta.\end{aligned}
+\end{equation}
+The first term has norm at most $\bar\omega(\theta(s)+\theta(0))$, since $\|(I-R)v\|\le\angle(R)\|v\|$ and the angle of $\mathcal E(s)\mathcal E(0)^*$ is at most $\theta(s)+\theta(0)$. The second is at most $\bar\alpha s$, the third at most $W$. Hence $\theta'(s)\le W+\bar\alpha s+\bar\omega(\theta(s)+H)$, and Gr\"onwall's inequality gives
+\begin{equation}
+\theta(s)\le e^{\bar\omega s}\theta(0)+\!\int_0^s\!e^{\bar\omega(s-u)}(W+\bar\alpha u+\bar\omega H)\,du\le E(s),
+\end{equation}
+using $(e^x-1)/\bar\omega\le s e^{x}$ and $(e^x-1-x)/\bar\omega^2\le (s^2/2)e^{x}$ with $x=\bar\omega s$. The same inequality bounds the rate error by $F(s)$ for $s<h$. For $a\ge h$ the target is frozen and the desired attitude moves by at most $\bar\omega$ per second, so $\theta(a)\le\theta(h)+\bar\omega(a-h)$; the target rate is $0$ and the desired rate is at most $\bar\omega$.
+\end{proof}
+
+\begin{theorem}[Online certificate]\label{thm:cert}
+Let the leader use $H_1=\|\Log(q_{t,1}^*\otimes q_1)\|$ and $W_1$ its transported rate error to the exact target $q_{t,1}=q_1^\star$. For a follower $i$ with any parent $p$ (possibly time-varying), whose newest delivered packet carries $(H_p,W_p)$ and has age $a$, let
+\begin{align}
+H_i&=E(a)+\|\Log(q_{t,i}^*\otimes q_i)\|,\\
+W_i&=F(a)+\|\omega_i-R(q_i)^TR(q_{t,i})\omega_{t,i}\|,
+\end{align}
+and $H_i=W_i=\infty$ if no packet has arrived. Then $\chi_i(t)\le H_i(t)$ and $\epsilon_i(t)\le W_i(t)$ for all $t$, under arbitrary delays, losses, outages and parent switches. The common-frame pair error $\vartheta_{ij}=\|\Log((q_i\otimes o_i^*)^*\otimes(q_j\otimes o_j^*))\|$ satisfies $\vartheta_{ij}\le H_i+H_j$.
+\end{theorem}
+\begin{proof}
+Induct on time. Delivery takes at least one sample, so every bound stored in a packet was computed from strictly earlier ones; the base cases are the leader, whose target is exact, and $H=\infty$. If the sender's bounds hold at its stamp, Lemma~\ref{lem:ext} bounds the target error and target rate error by $E(a)$ and $F(a)$, whichever packet is newest, however old, and whichever parent supplied it. By the triangle inequality for the geodesic distance, $\chi_i\le\angle(q_i^{\star*}q_{t,i})+\angle(q_{t,i}^*q_i)\le H_i$. For rates,
+\begin{equation}
+\begin{aligned}\omega_i-R(q_i)^TR(q_i^\star)\omega_i^\star&=\big[\omega_i-R(q_i)^TR(q_{t,i})\omega_{t,i}\big]\\&\quad+R(q_i)^T\big[R(q_{t,i})\omega_{t,i}-R(q_i^\star)\omega_i^\star\big],\end{aligned}
+\end{equation}
+whose norm is at most $W_i$. For the pair error, $q_i\otimes o_i^*$ differs from $q_r$ by $\chi_i$ in angle, so $\vartheta_{ij}\le\chi_i+\chi_j$.
+\end{proof}
+
+\begin{remark}
+No acyclicity of the parent graph is needed: a cycle without a leader-anchored packet keeps $H=\infty$, and finite bounds always trace back to the leader. The theorem bounds the error of the \emph{target} and, through the measured local error, of the state. It does not bound the local error: stability of the delayed, saturated feedback loop is not proved. If the local loop were input-to-state stable from target error to local error with a gain $\gamma$ (an assumption we neither prove nor test), $\chi_i$ would be bounded by $(1+\gamma)$ times the supremum of $E$ plus a decaying term. We do not claim this.
+\end{remark}
+
+\section{Guaranteed-Accuracy Triggering}\label{sec:gat}
+\subsection{Tolerance Rule}
+Let $E_c(a)=E(a)-H$ be the \emph{communication-induced} part of the certified target error ($E$ is increasing in $a$). After sending a packet carrying $(H,W)$ at time $\tau$, the sender computes
+\begin{equation}
+a^\ast=\min\{a:\,E_c(a)\ge\varepsilon\},
+\end{equation}
+by bisection on the bound alone, and sends the next packet at
+\begin{equation}
+\tau+\min\{T_{\max},\ \max\{T_{\min},\ a^\ast-d_m\}\},
+\end{equation}
+with delay margin $d_m=0.25$~s (the delay in our model never exceeds 0.2~s except in the network case), $T_{\min}=0.1$~s and $T_{\max}=2$~s. The receiver uses the horizon $h=\min\{3,\max\{0,(\bar\omega-W)/\bar\alpha\}\}$~s, the age at which extrapolation stops being better in the worst case than holding. The rule needs no measurement of the follower's state and no model of its controller.
+
+\begin{proposition}[Tolerance guarantee]\label{prop:gat}
+Suppose that on a link consecutive packets are delivered with delay at most $d_m$ and no packet in between is lost, and that $E_c(T_{\min}+d_m)\le\varepsilon$ (the tolerance is feasible). Then from the first delivery onward the receiver's certified target error satisfies $E_c(a)\le\varepsilon$ at every instant.
+\end{proposition}
+\begin{proof}
+After a delivery of the packet stamped $\tau$ the receiver's age is the elapsed time since $\tau$. The next packet is sent no later than $\tau+\max\{T_{\min},a^\ast-d_m\}$ (or at $T_{\max}<a^\ast-d_m$) and arrives at most $d_m$ later, so before the age exceeds $\max\{T_{\min}+d_m,a^\ast\}$, and for $a\le a^\ast$ monotonicity gives $E_c(a)\le\varepsilon$; the case $T_{\min}+d_m>a^\ast$ is excluded by feasibility. Both ends compute $E_c$ from the same $(H,W)$, so the sender's prediction equals the receiver's bound.
+\end{proof}
+The guarantee is conditional: a lost packet, an outage or a delay above $d_m$ voids it, and the certificate then reports the actual bound. A child that switches parent also leaves the new parent unaware for a short time (Section~\ref{sec:results} measures this).
+
+\subsection{Certified Parent Re-selection and Variants}
+Each follower evaluates $E$ for the newest packet from every other spacecraft and uses the candidate with the smallest bound. It switches only when the best bound is below $0.8$ of the current one and the last switch is at least 2~s old, or when the current parent has no data. A parent learns that it is a parent from the child's report (every 2~s on the parent link; 6~s heartbeats on the others), and a terminal that is not locked retries every 1.6~s. \textbf{GAT} uses the tolerance rule on parent links with these reports; \textbf{GAT-fixed} keeps a static leader-fed star and no re-selection. \textbf{CLAC}, the authors' certified event-rule variant from earlier development, uses the same certificate and re-selection but sends on the innovation threshold of the authors' previous event rule ($150\urad$ attitude, $100\urad$/s rate) with 1~s reports and 3~s heartbeats; it has no tolerance guarantee.
+
+\section{Baselines, Conditions and Protocol}\label{sec:protocol}
+\subsection{Compared Methods}
+All methods share the simulator, local controller, optical layer, seeds, disturbances and channel draws. They are adaptations, not the authors' original code.
+\begin{itemize}
+\item \textbf{Ideal}: periodic exchange with perfect delivery on the chain (reference only).
+\item \textbf{Periodic}: 0.2~s exchange over the optical links with pilot recovery.
+\item \textbf{EO chain, EO star}: the authors' previous event rule with prediction on the chain SC1$\to$SC2$\to$SC3$\to$SC4 and on a static star in which the leader feeds every follower. The star is included because a static tree better than the chain would otherwise inflate the benefit of re-selection.
+\item \textbf{ETC}: static event trigger with zero-order hold~\cite{tabuada2007}. \textbf{DET}: dynamic event trigger with internal variable~\cite{girard2015} and the same predicting receiver. \textbf{ST}: self-triggered next time from a model-based deviation bound~\cite{mazo2010,heemels2012}.
+\item \textbf{CLAC}, \textbf{GAT-fixed}, \textbf{GAT}.
+\end{itemize}
+Each baseline has one free parameter, set on development seeds 11/23/47 to the most accurate value whose mean payload does not exceed 1.05 times the payload of CLAC (76.7~kB), so the budget is a cap and not an equality. For GAT, the tolerance was set to $\varepsilon=1$~mrad, the largest grid value at which traffic still depends on $\varepsilon$ (above 2~mrad traffic saturates at the 2~s cap), and the report and heartbeat periods (2~s, 6~s) were chosen because 1~s and 3~s added 13~kB for under 1\% accuracy. Fig.~\ref{fig:dial} shows the development sweeps.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_v3_dial.pdf}
+\caption{Development seeds: pair RMS against payload for the tolerance sweep of GAT (numbers: $\varepsilon$ in mrad) and the baselines' parameter sweeps. Baseline accuracy changes little with payload.}
+\label{fig:dial}
+\end{figure}
+
+\subsection{Conditions}
+Seventeen conditions are used; the fault window is 35~s (25--60~s) except for combined (28--52~s), severe attenuation (22--55~s) and beam mismatch (20--58~s). The 14 conditions of the earlier study are: healthy; pointing bias on one link; pointing bias with three different vectors on the three chain links; bias on all six links; an \emph{isolated} actuator fault (SC2 effectiveness $0.30/0.45/0.35$, optics untouched); severe attenuation of link 1--2 (gain 0.08); combined pointing, attenuation and actuator faults; a beam 10\% narrower than modelled; an alternate tree with 0.2~s delay and 10\% extra loss; 35~$\mu$rad jitter; 15~s pull-in; pointing bias on a random link; outage of a random link; outage of two random links. Three conditions are new and were never used in tuning or any earlier run (marked $*$): a pointing bias that ramps to $1.4\times$ on a random link, intermittent outages (3~s every 8~s) of a random link, and a random-link outage combined with a degraded actuator on SC3. Only five condition types (one-link pointing, combined, random-link pointing, random-link outage, actuator only) were used for tuning, on seeds 11/23/47. In the random-link conditions the faulty links are drawn from the seed (the held-out seeds balance the six links) and are identical for every method.
+
+\subsection{Seeds, Lock and Statistics}
+The 20 held-out seeds are 401--420, never used before (the earlier study used 201--220). Each seed fixes initial attitudes and rates, the reference phase, disturbances and fault location. Sources, tuning outputs and protocol were hashed (SHA-256) before the run. The in-metric check of the rate certificate then flagged four of 1{,}020 certified runs (network condition, GAT and GAT-fixed, seeds 409 and 417): at a follower age of exactly 3.00~s, the horizon cap, the controller already holds the target while the rate bound still used the extrapolating branch. This was a boundary bug in both the lemma statement and the code; the attitude bound was not affected. We fixed it (Section~\ref{sec:cert} now defines $F(a)=\bar\omega$ for $a\ge h$), locked again, and re-ran all 3{,}400 runs on the same seeds. The corrected run has the same pair RMS and attempts in every run as the first one, and zero violations. Both locks and the first results are kept in the repository. The earlier 560 trajectories (280 CLAC, 280 CLAC-fixed) re-run with the fix give zero violations and change one run by 0.1\%. The primary outcome is the fault-window pair RMS (degrees). Intervals are 95\% percentile bootstrap intervals over seeds (10{,}000 resamples, paired across methods), exploratory and unadjusted for multiplicity. An independent recomputation reproduced all 900 means to $4\times10^{-16}$ relative and all interval ends within 0.04 interval widths.
+
+\section{Results}\label{sec:results}
+\subsection{Accuracy and Traffic}
+Table~\ref{tab:pair} and Fig.~\ref{fig:pair} give pair RMS; Table~\ref{tab:cost} and Fig.~\ref{fig:tradeoff} give payload; Table~\ref{tab:contrast} gives GAT's paired change against the main baselines.
+
+\begin{table*}[!t]
+\caption{Fault-window pair RMS (deg), mean over 20 held-out seeds (seeds 401--420). Bold: best among the event-based methods (not Ideal/Periodic). Per.: periodic; ETC/DET/ST: static, dynamic, self-triggered; GAT-F: GAT without re-selection. $*$: condition never used before. ``Ideal'' (0.334$^\circ$ mean) uses the chain and is not a lower bound over topologies.}
+\label{tab:pair}
+\centering\scriptsize
+\input{tab_pair.tex}
+\end{table*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_v3_pair.pdf}
+\caption{Pair RMS with 95\% bootstrap intervals (20 held-out seeds) for six methods in 17 conditions and their mean.}
+\label{fig:pair}
+\end{figure*}
+
+\begin{table}[!t]
+\caption{Mean over the 17 conditions: payload, attempted packets, pair RMS (95\% CI).}
+\label{tab:cost}
+\centering\footnotesize
+\input{tab_cost.tex}
+\end{table}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_v3_tradeoff.pdf}
+\caption{Accuracy against payload (mean of 17 conditions, 95\% interval on pair RMS).}
+\label{fig:tradeoff}
+\end{figure}
+
+\begin{table*}[!t]
+\caption{GAT minus baseline: paired change in pair RMS (\%), mean [95\% CI]. Negative favours GAT.}
+\label{tab:contrast}
+\centering\scriptsize
+\input{tab_contrast.tex}
+\end{table*}
+
+\emph{Tolerance triggering alone (GAT-fixed).} On the same static star, GAT-fixed sends 18.0~kB against 68.5~kB for the tuned event trigger: 73.6\% less (CI $[71.7,75.3]\%$ less), and 75.1\% less than the self-triggered rule. The mean pair RMS is only 4.0\% higher (CI $[1.6,6.3]\%$). The mean hides a split: when nothing fails, GAT-fixed is 30.0\% worse than EO star (0.152$^\circ$ against 0.117$^\circ$) at 73.1\% less payload, and in outage conditions every star-based method fails alike, so the means are close.
+
+\emph{With certified re-selection (GAT).} Over the 17 conditions GAT lowers pair RMS by 45.1\% against EO star (CI $[39.8,49.9]\%$), 44.8\% against DET and 43.9\% against ST (CI $[38.5,48.7]\%$), while sending 34.9\%, 37.9\% and 38.5\% less payload. The gain comes from link faults: under severe attenuation of link 1--2 GAT reaches $0.263^\circ$ against $1.147^\circ$ for EO star (76.7\% lower); with a random-link outage 28.7\% lower (CI $[6.5,51.1]\%$), two-link outage 64.9\%, 35~$\mu$rad jitter 59.6\% and 15~s pull-in 37.7\% lower.
+
+\emph{Where GAT loses.} With no link fault GAT is 30.7\% worse than EO star (CI $[29.7,31.9]\%$) and 33\% worse than DET and ST, because the tolerance at $\varepsilon=1$~mrad lets the follower run on extrapolated targets. Against CLAC, GAT is 31.4\% worse (CI $[28.0,34.8]\%$) over the 17 conditions while sending 43.4\% less: CLAC is the more accurate and GAT the leaner method. The pointing bias that ramps slowly is absorbed by the terminal's pilot recovery in every method (the row equals the healthy row).
+
+\emph{Unseen conditions.} On the three conditions never used before, CLAC is 24.7\% lower than EO star (CI $[15.4,34.1]\%$), whereas GAT is only 1.6\% lower with an interval that includes zero ($[-14.2,+10.5]\%$ averaged over the three; ramp equals healthy, intermittent outage $-6.9\%$, CI $[-22.2,+8.1]\%$, and outage plus actuator $-28.7\%$, CI $[-50.9,-6.9]\%$). The advantage of GAT over the event trigger therefore needs a hard link fault.
+
+\emph{Isolated actuator fault.} The actuator-only condition raises pair RMS by 0.010$^\circ$ for ideal communication relative to healthy and by 0.003$^\circ$ for GAT: the feedback and disturbance estimator absorb it. A harsher actuator fault was not tested.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_v3_trace.pdf}
+\caption{SC4 error and GAT parent choice when the SC1--SC4 link is out (shaded; seed 403). The static star loses its leader link; GAT moves SC4 to another spacecraft and returns after the link re-locks.}
+\label{fig:trace}
+\end{figure}
+
+\subsection{Guarantee and Certificate}
+In healthy runs on locked links the tolerance held in 99.5\% of samples for GAT-fixed and 99.2\% for GAT in the fault-free window ($t\ge10$~s before the fault); over all 17 conditions, restricted to locked parent links, in 98.3\% and 96.3\%. The shortfall comes from the transient after a parent switch (the new parent has not yet learned that it is a parent) and from losses. Neither the attitude nor the rate certificate was violated in 1{,}020 held-out trajectories (340 each of CLAC, GAT-fixed and GAT); the median over GAT runs of the per-run median ratio of actual to certified error is 0.92, because the bound adds the exact local error to the extrapolation bound. GAT changed parent 4.2 times per run on average.
+
+\section{Discussion}
+Tolerance triggering is easy to state: one number with a unit sets the traffic, and the bound reports the guarantee's status. Its cost is accuracy when nothing fails, because a tolerance that is safe in the worst case is loose in the typical case; the event rule uses the actual deviation and is more accurate per byte near 77~kB (CLAC). The re-selection, driven by the same bound, is what makes both methods robust to link faults, and it is the same idea under both. The advantage over event triggering is clear for hard link faults and absent for slow pointing drift.
+
+\section{Limitations and Threats to Validity}\label{sec:limits}
+\begin{itemize}
+\item \textbf{Closed-loop stability is not proved.} The certificate bounds the target error and, through the measured local error, the state error. The ISS-type corollary in the remark is an assumption.
+\item \textbf{Simulation only.} There is no hardware-in-the-loop, flight or second high-fidelity simulator. Only published TBIRD values calibrate the model, a 930~km downlink, not a 1~km crosslink; raw NASA telemetry is not public and no ISRO crosslink data were found.
+\item \textbf{The command class is assumed known}; a wrong $\bar\omega$ or $\bar\alpha$ breaks the certificate. The constants were checked numerically.
+\item \textbf{Baselines are adaptations}, each tuned with one parameter on five condition types. Other tuning or stronger triggers could narrow the gaps; faulty-link conditions favour any method that can change its tree. The tolerance guarantee is conditional on delivery.
+\item \textbf{Same team, same simulator} for tuning and evaluation. The held-out seeds are fresh and three conditions are unseen, but the unseen conditions are variants of known fault types.
+\item \textbf{Novelty} is stated relative to the literature we reviewed; absence of prior work cannot be proved.
+\item \textbf{Defect disclosure.} A boundary bug in the rate bound was found by our own check after the first lock and fixed (Section~\ref{sec:protocol}).
+\end{itemize}
+
+\section{Conclusion}
+A bound that travels with each packet turns two decisions, when to send and whom to listen to, into computations the nodes make from the command-generator limits alone. The tolerance rule cuts traffic by about three quarters at a small average accuracy cost, and with re-selection it cuts the pair error of the budget-matched baselines under link faults, but it does not improve fault-free accuracy and it does not beat the event trigger on the unseen drift and intermittent conditions. What remains open is a closed-loop stability proof for the saturated delayed controller, hardware or independent high-fidelity validation, and calibration with crosslink data when such data become public.
+
+\section*{Data and Software Availability}
+Code, configurations, tuning sweeps, both lock files, result CSVs, analysis scripts and tests are in the project repository (\url{https://github.com/kaushalrog/Satellite-Optical-Fault-Recovery}, branch \texttt{gat-method}). MATLAB R2026a runs \texttt{run\_tests\_all} and \texttt{run\_v3\_evaluation}; Python scripts regenerate all tables and figures. The NASA values come from the cited public reports.
+
+\section*{Acknowledgment}
+The authors thank the Amrita School of Artificial Intelligence for support.
+
+\input{bib.tex}

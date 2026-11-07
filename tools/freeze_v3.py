@@ -2,11 +2,13 @@
 from pathlib import Path
 import argparse,hashlib,json,datetime
 ROOT=Path(__file__).resolve().parents[1]
-LOCK=ROOT/'results/v3/lock.json'
+import os
+V3=os.environ.get('V3_DIR','v3')
+LOCK=ROOT/f'results/{V3}/lock.json'
 def files():
     f=list(ROOT.glob('*.m'))+list((ROOT/'src').glob('*.m'))+list((ROOT/'tests').glob('*.m'))
     f+=list((ROOT/'tuning').glob('*.m'))+list((ROOT/'validation').glob('*.m'))+list((ROOT/'results/v3').glob('tuning_*.csv'))
-    f+=list((ROOT/'results/v2').glob('tuning_*.csv'))+[ROOT/'docs/V3_PROTOCOL.md',ROOT/'tools/analyze_v3.py',Path(__file__)]
+    f+=list((ROOT/'results/v2').glob('tuning_*.csv'))+[ROOT/'docs/V3_PROTOCOL.md',ROOT/'docs/V3_FIX1.md',ROOT/'tools/analyze_v3.py',Path(__file__)]
     return sorted(set(p for p in f if p.name!='lock.json'))
 def verify():
     record=json.loads(LOCK.read_text(encoding='utf-8'))

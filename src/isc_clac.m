@@ -21,7 +21,7 @@ case 'bound'
     wbar=ref.omegaMax;al=ref.alphaMax;
     % Gronwall bound on the geodesic distance between the rate-extrapolated target and the
     % true desired attitude (Lemma 1 in the paper): d' <= W + al*s + wbar*(d(s)+d(0)).
-    if a<=hor
+    if a<hor      % strict: at a == hor the controller already holds the target (zero rate)
         Eatt=exp(wbar*a)*(Hs*(1+wbar*a)+Ws*a+al*a^2/2);Erate=Ws+al*a+wbar*(Eatt+Hs);
     else
         Eh=exp(wbar*hor)*(Hs*(1+wbar*hor)+Ws*hor+al*hor^2/2);

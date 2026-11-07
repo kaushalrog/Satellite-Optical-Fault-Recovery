@@ -85,3 +85,13 @@ Branch `ieee-transactions-revision`. The previous manuscript state is tagged `ma
 
 - [x] 8.1 README, CHANGELOG and START_HERE updated
 - [x] 8.2 Everything committed on the revision branch
+
+## 9. Guaranteed-accuracy triggering (GAT) follow-up (branch `gat-method`)
+
+- [x] 9.1 Simpler method: one tolerance, send time from the certified bound (`optical_gat`, `optical_gat_fixed`)
+- [x] 9.2 Proposition with proof; guarantee measured (99.5 % fixed tree, 99.2 % with re-selection on locked fault-free samples)
+- [x] 9.3 Tolerance and overhead tuned on development seeds only (`results/v3/tuning_*.csv`)
+- [x] 9.4 Fresh held-out seeds 401–420; three condition types never used before; 3,400 runs
+- [x] 9.5 Rate certificate now checked in the metrics; found and fixed a horizon-boundary defect (`docs/V3_FIX1.md`); corrected run reported, first lock kept
+- [x] 9.6 Paper `paper_v3/main.pdf` with honest results (GAT loses when nothing fails and does not beat event triggering on the unseen drift/intermittent conditions)
+- [ ] 9.7 Closed-loop stability (not proved), hardware or independent high-fidelity validation (not done): open by design

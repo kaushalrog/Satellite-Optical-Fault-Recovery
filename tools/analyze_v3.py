@@ -3,7 +3,8 @@ Tables use the Python standard library only; figures need matplotlib."""
 from pathlib import Path
 import csv,glob,json,math,random,statistics
 from freeze_v3 import verify
-ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'results/v3'
+import os
+ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/('results/'+os.environ.get('V3_DIR','v3'))
 METHODS=['ideal','periodic','eo_chain','eo_star','zoh_star','dynamic_star','self_star','clac','gat_fixed','gat']
 LABEL={'ideal':'Ideal comm.','periodic':'Periodic','eo_chain':'EO chain','eo_star':'EO star','zoh_star':'Static ETC (ZOH)',
        'dynamic_star':'Dynamic ETC','self_star':'Self-triggered','clac':'CLAC','gat_fixed':'GAT fixed','gat':'GAT'}

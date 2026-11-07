@@ -90,3 +90,7 @@ matlab -batch "run('audit_v2/math_check.m')"
 matlab -batch "addpath('audit_v2');audit_trajectories(1:14,'','frozen')"
 python3 audit_v2/claims_audit.py
 ```
+
+## Addendum (v3 work): correction to the rate-certificate verdict
+
+The "PASS" for F(a) and the horizon branch above was **wrong at one point**: at follower age exactly equal to the horizon (a == h) the controller holds the target (zero rate) while the code and the lemma statement still used the extrapolating rate bound. The in-metric rate check added for v3 found it (4 of 1,020 runs, one sample each, excess up to 5.9e-4 rad/s). My Monte-Carlo test used continuous ages, so equality had probability zero, and the v2 replay never landed on the cap. Fixed in `src/isc_clac.m` (`a < hor`), documented in `docs/V3_FIX1.md`, regression test `tests/test_boundary.m`. The attitude bound was never affected. Re-running the 560 v2 trajectories with the fix gives 0/0 violations and changes one run by 0.1 %. Lesson: audit tests should include exact-boundary cases.

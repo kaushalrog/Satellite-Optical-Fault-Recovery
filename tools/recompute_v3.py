@@ -3,7 +3,8 @@
 from pathlib import Path
 import csv,glob
 import numpy as np
-ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'results/v3'
+import os
+ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/('results/'+os.environ.get('V3_DIR','v3'))
 rows=[]
 for f in sorted(glob.glob(str(OUT/'trials_heldout_*.csv'))):rows+=list(csv.DictReader(open(f,encoding='utf-8-sig')))
 ref=list(csv.DictReader(open(OUT/'means_ci.csv')))
