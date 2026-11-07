@@ -1,5 +1,7 @@
 # Satellite Optical Communication — final V2 package
 
+> Revision (7 Nov 2026): IEEE Transactions revision on branch `ieee-transactions-revision`; see `docs/V2_METHODS.md`, `paper_v2/main.pdf`, `REVISION_CHECKLIST.md`.
+
 This is the self-contained package to use. You do not need either previous ZIP.
 
 ## Open in MATLAB / Simulink

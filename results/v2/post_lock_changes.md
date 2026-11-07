@@ -1,0 +1,4 @@
+# Changes after the second lock
+
+1. `src/isc_diagnose.m`: the fit-acceptance limit now defaults to the legacy value 0.06 when the caller does not pass `fitErrMax`. The original integrated test suite (`tests/test_integrated.m`) calls `isc_diagnose` without that field and failed after the physical-optics change. Every held-out call goes through `isc_step`, which always passes `fitErrMax`, so no held-out result depends on the default. The locked SHA-256 of the file was `f0100791ffb3b28f539965e32d147ea7ebce2f1540833ce225add47d343e1bae`; `tools/freeze_v2.py` therefore reports this one file as changed. A subset of the held-out runs was re-executed after the change and matched the stored CSV exactly (see `post_lock_rerun.txt`).
+2. New files outside the lock: `tests/test_lock_dynamics.m`, `run_tests_all.m`, `tools/recompute_v2.py`, `tools/make_v2_*`.
