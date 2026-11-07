@@ -24,6 +24,9 @@ switch caseName
     case 'pointing_all_links',scen='pointing_all_links';
     case 'random_link_pointing',scen='edge_pointing';
     case {'random_link_outage','two_link_outage'},scen='edge_outage';
+    case 'ramp_link_pointing',scen='edge_ramp';
+    case 'intermittent_link_outage',scen='edge_intermittent';
+    case 'outage_plus_actuator',scen='edge_outage_actuator';
     case 'actuator_isolated',scen='body_actuator';
     case 'attenuation_severe',scen='attenuation';
     case {'combined','beam_mismatch','network_transfer'},scen='combined';
@@ -54,8 +57,8 @@ end
 chainEnds=[1 2 7 8 11 12];
 if strcmp(caseName,'network_transfer'),c.parent=[0 1 1 2];chainEnds=[1 2 3 4 9 10];end
 if strcmp(tree,'star'),c.parent=[0 1 1 1];chainEnds=[1 2 3 4 5 6];end
-if strcmp(mode,'optical_clac'),c.activeEndpoints=1:12;
-elseif strcmp(mode,'optical_clac_fixed'),c.activeEndpoints=chainEnds(mod(chainEnds,2)==1);   % feed links only
+if ismember(mode,{'optical_clac','optical_gat'}),c.activeEndpoints=1:12;
+elseif ismember(mode,{'optical_clac_fixed','optical_gat_fixed'}),c.activeEndpoints=chainEnds(mod(chainEnds,2)==1);   % feed links only
 else,c.activeEndpoints=chainEnds;end
 stream=RandStream('mt19937ar','Seed',seed+100000);
 base=[.012 -.008 .009 -.011;-.006 .010 -.008 .007;.008 -.005 .006 -.009];
@@ -66,10 +69,11 @@ c.disturbancePhase=2*pi*rand(stream,3,4);
 c.disturbanceScale=.7+.6*rand(stream,3,4);
 % Fault location is drawn last (so earlier cases keep their random streams) and is
 % identical for every method run on the same seed.
-if ismember(scen,{'edge_pointing','edge_outage'})
+if ismember(scen,{'edge_pointing','edge_outage','edge_ramp','edge_intermittent','edge_outage_actuator'})
     nE=1;if strcmp(caseName,'two_link_outage'),nE=2;end
     c.faultEdges=randperm(stream,6,nE);
-    if nE==1 && seed>=201 && seed<=299,c.faultEdges=mod(seed-201,6)+1;end   % held-out seeds: balanced over the six links
+    if nE==1 && seed>=201 && seed<=299,c.faultEdges=mod(seed-201,6)+1;end
+    if nE==1 && seed>=401 && seed<=499,c.faultEdges=mod(seed-401,6)+1;end   % held-out seeds: balanced over the six links
     ang=2*pi*rand(stream,1,nE);mag=.85+.25*rand(stream,1,nE);
     c.faultBias=[mag.*cos(ang);mag.*sin(ang)];c.outageGain=.08;
 end

@@ -1,0 +1,21 @@
+TUNE gat_fixed tol=1e-04 standby=3 report=1 pair=0.3304 bytes=152510 guaranteeFrac=0.764
+TUNE gat_fixed tol=3e-04 standby=3 report=1 pair=0.3422 bytes=64017 guaranteeFrac=0.855
+TUNE gat_fixed tol=5e-04 standby=3 report=1 pair=0.3621 bytes=38039 guaranteeFrac=0.941
+TUNE gat_fixed tol=1e-03 standby=3 report=1 pair=0.3845 bytes=17588 guaranteeFrac=0.942
+TUNE gat_fixed tol=2e-03 standby=3 report=1 pair=0.3957 bytes=11710 guaranteeFrac=0.939
+TUNE gat_fixed tol=4e-03 standby=3 report=1 pair=0.3914 bytes=10314 guaranteeFrac=0.943
+
+ans =
+
+  6×7 table
+
+      method       tol_rad    standby_s    report_s    pair_rms_deg    payload_bytes    guarantee_fraction
+    ___________    _______    _________    ________    ____________    _____________    __________________
+
+    "gat_fixed"     0.0001        3           1          0.33037        1.5251e+05           0.76363      
+    "gat_fixed"    0.00025        3           1          0.34217             64017           0.85537      
+    "gat_fixed"     0.0005        3           1          0.36214             38039           0.94074      
+    "gat_fixed"      0.001        3           1          0.38453             17588           0.94204      
+    "gat_fixed"      0.002        3           1          0.39575             11710           0.93905      
+    "gat_fixed"      0.004        3           1          0.39138             10314           0.94273      
+

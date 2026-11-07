@@ -60,7 +60,7 @@ case 'update'
     end
     n=struct('predict',true,'predictionHorizon',horizon,'offsets',{c.offsets},'holdQ',{s.holdQ},...
         'parent',parent,'referencePhase',c.referencePhase);
-    Hn=inf(1,4);Wn=inf(1,4);
+    Hn=inf(1,4);Wn=inf(1,4);En=inf(1,4);En(1)=0;   % En: bound beyond the source's own bound
     for i=1:4
         [qd,wd,~]=isc_tracking_target(i,s.cachedQ,s.cachedW,s.stamp,t,n);
         R=isc_math('rot',s.q(:,i));Rd=isc_math('rot',qd);
@@ -73,11 +73,11 @@ case 'update'
             if s.stamp(p,i)>=0
                 a=t-s.stamp(p,i);
                 b=isc_clac('bound',s.cachedBoundH(p,i),s.cachedBoundW(p,i),a,horizon(i),ref);
-                Hn(i)=b.Eatt+eAtt;Wn(i)=b.Erate+eRate;
+                Hn(i)=b.Eatt+eAtt;Wn(i)=b.Erate+eRate;En(i)=b.Eatt-s.cachedBoundH(p,i);   % communication-induced bound
             end
         end
     end
-    s.parent=parent;s.horizon=horizon;s.Hnode=Hn;s.Wnode=Wn;out=s;
+    s.parent=parent;s.horizon=horizon;s.Hnode=Hn;s.Wnode=Wn;s.Enode=En;out=s;
 case 'reference'
     % Conservative constants of the command generator (see isc_reference), with
     % margins for the rotation-vector nonlinearity. Verified numerically in tests.

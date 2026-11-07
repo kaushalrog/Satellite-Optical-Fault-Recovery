@@ -1,0 +1,17 @@
+{
+ "certificate_runs": 1020,
+ "runs_with_attitude_violation": 0,
+ "runs_with_rate_violation": 4,
+ "guarantee_healthy": {
+  "gat_fixed": {
+   "gat_guarantee_locked_prefault": 0.9953254035031792,
+   "gat_guarantee_fraction_prefault": 0.9737777777777777,
+   "all_conditions_locked": 0.9825770309319503
+  },
+  "gat": {
+   "gat_guarantee_locked_prefault": 0.9921557626844874,
+   "gat_guarantee_fraction_prefault": 0.9746666666666667,
+   "all_conditions_locked": 0.9625123563749604
+  }
+ }
+}

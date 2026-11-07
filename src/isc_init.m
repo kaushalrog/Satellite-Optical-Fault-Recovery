@@ -31,6 +31,6 @@ if isfield(c,'task') && strcmp(c.task,'leader_tracking')
     s.parent=c.parent;s.horizon=c.staleLimit*ones(1,4);s.Hnode=inf(1,4);s.Wnode=inf(1,4);
     s.lastSwitch=-100*ones(1,4);s.switches=zeros(1,4);
     for i=2:4,s.cachedParentId(i,c.parent(i))=c.parent(i);end
-    s.eta=zeros(1,c.M);s.nextSend=zeros(1,c.M);
+    s.eta=zeros(1,c.M);s.nextSend=zeros(1,c.M);s.gatNext=zeros(1,c.M);s.Enode=inf(1,4);
 end
 end

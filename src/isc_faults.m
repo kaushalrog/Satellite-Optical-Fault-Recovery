@@ -22,6 +22,16 @@ if strcmp(c.scenario,'pointing_all_links')
     end
 end
 % Fault on arbitrary physical links chosen by the experiment (c.faultEdges, indices into c.edges).
+if ismember(c.scenario,{'edge_ramp','edge_intermittent','edge_outage_actuator'})
+    ramp=min(1,(t-c.faultStart)/(0.5*(c.faultEnd-c.faultStart)));
+    for h=1:numel(c.faultEdges)
+        ee=2*c.faultEdges(h)-1:2*c.faultEdges(h);
+        if strcmp(c.scenario,'edge_ramp'),f.bias(:,ee)=repmat(1.4*ramp*c.faultBias(:,h)*c.divergence*scale,1,2);end
+        if strcmp(c.scenario,'edge_intermittent') && mod(t-c.faultStart,8)<3,f.gain(ee)=c.outageGain;end
+        if strcmp(c.scenario,'edge_outage_actuator'),f.gain(ee)=c.outageGain;end
+    end
+    if strcmp(c.scenario,'edge_outage_actuator'),f.eta(:,3)=[.3;.45;.35];end
+end
 if ismember(c.scenario,{'edge_pointing','edge_outage'})
     for h=1:numel(c.faultEdges)
         ee=2*c.faultEdges(h)-1:2*c.faultEdges(h);

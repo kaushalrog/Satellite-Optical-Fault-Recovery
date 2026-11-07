@@ -5,7 +5,7 @@ if nargin<3,seed=11;end
 if nargin<4,policy='off';end
 allowed={'healthy','pointing','body_actuator','moderate_attenuation',...
     'pointing_actuator','pointing_attenuation','actuator_attenuation','combined','attenuation',...
-    'pointing_multilink','pointing_all_links','edge_pointing','edge_outage'};
+    'pointing_multilink','pointing_all_links','edge_pointing','edge_outage','edge_ramp','edge_intermittent','edge_outage_actuator'};
 assert(ismember(scenario,allowed),'Unknown tracking scenario');
 c=isc_config(mode,'healthy',seed);c.scenario=scenario;
 c.task='leader_tracking';c.T=75;c.gimbalTau=0.06;

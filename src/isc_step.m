@@ -186,7 +186,7 @@ z.lock=double(sendGate);z.packetErrorProb=lossProb;
 if tracking
     z.manager=manager;z.severity=severity;z.feasible=feasible;
     z.bestPower=bestPower;z.predictionHorizon=predictionHorizon;
-    z.certH=s.Hnode;z.certW=s.Wnode;z.parentSel=s.parent;
+    z.certH=s.Hnode;z.certW=s.Wnode;z.certE=s.Enode;z.parentSel=s.parent;
 end
 % Nonlinear rigid-body plant, midpoint integration for angular velocity.
 for i=1:4

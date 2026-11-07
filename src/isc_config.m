@@ -35,21 +35,23 @@ c.eventAngle=1.5e-4; c.eventRate=1e-4; c.staleLimit=1.5;
 %   optical_clac           certified, link-aware coordination (proposed)
 %   optical_clac_fixed     proposed method without parent re-selection (ablation)
 legacyModes={'ideal_periodic','optical_periodic_no_recovery','optical_periodic','optical_event','optical_event_no_prediction'};
-newModes={'optical_event_zoh','optical_event_dynamic','optical_self_triggered','optical_clac','optical_clac_fixed'};
+newModes={'optical_event_zoh','optical_event_dynamic','optical_self_triggered','optical_clac','optical_clac_fixed','optical_gat','optical_gat_fixed'};
 assert(ismember(mode,[legacyModes newModes]),'Unknown mode');
 c.ideal=strcmp(mode,'ideal_periodic');
 c.recovery=ismember(mode,[{'optical_periodic','optical_event','optical_event_no_prediction'} newModes]);
-c.event=ismember(mode,{'optical_event','optical_event_no_prediction','optical_event_zoh','optical_event_dynamic','optical_clac','optical_clac_fixed'});
+c.event=ismember(mode,{'optical_event','optical_event_no_prediction','optical_event_zoh','optical_event_dynamic','optical_clac','optical_clac_fixed','optical_gat','optical_gat_fixed'});
 c.predict=~ismember(mode,{'optical_event_no_prediction','optical_event_zoh'});
 c.trigger='static';
 if strcmp(mode,'optical_event_zoh'),c.trigger='zoh';end
 if strcmp(mode,'optical_event_dynamic'),c.trigger='dynamic';end
 if strcmp(mode,'optical_self_triggered'),c.trigger='self';end
-c.clac=ismember(mode,{'optical_clac','optical_clac_fixed'});
+c.clac=ismember(mode,{'optical_clac','optical_clac_fixed','optical_gat','optical_gat_fixed'});
+c.gat=ismember(mode,{'optical_gat','optical_gat_fixed'});   % tolerance-guaranteed triggering on tree links
+c.gatTol=6e-3; c.gatMaxSilence=2.0; c.gatDelayMargin=0.25;
 % Parameters of the added methods (tuned on development seeds only; see isc_v2_config)
 c.zohAngle=1.5e-4; c.dynBase=1.5e-4; c.dynLambda=1.0; c.dynTheta=1.0; c.dynSigma=1.0; c.selfAccel=2e-4;
 c.clacRef=isc_clac('reference'); c.clacHorizonMin=0.0; c.clacHorizonMax=3.0;
 c.clacSwitchRatio=0.6; c.clacDwell=2.0; c.clacStandbyPeriod=3.0; c.clacReportPeriod=1.0; c.clacRetryGap=1.6;
-c.clacReselect=strcmp(mode,'optical_clac');
+c.clacReselect=ismember(mode,{'optical_clac','optical_gat'});
 assert(ismember(scenario,{'healthy','pointing','body_actuator','attenuation','blockage','combined'}),'Unknown scenario');
 end

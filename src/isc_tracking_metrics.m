@@ -56,10 +56,40 @@ if any(valid)
 else,m.conditional_offset_rms_rad=NaN;end
 m.affected_estimated_infeasible_fraction=mean(r.feasible(windows{2},1)==0);
 m.cert_violation_fraction=NaN;m.cert_tightness_median=NaN;m.parent_switches=0;
+m.cert_rate_violation_fraction=NaN;m.gat_guarantee_fraction=NaN;m.gat_guarantee_fraction_prefault=NaN;m.gat_guarantee_locked=NaN;m.gat_guarantee_locked_prefault=NaN;
 if c.clac && isfield(r,'certH')
     H=r.certH(:,2:4);E=trace.commandError(:,2:4);ok=isfinite(H);
     m.cert_violation_fraction=mean(E(ok)>H(ok)*(1+1e-9)+1e-12);
     ratio=E(ok)./H(ok);m.cert_tightness_median=median(ratio);
     m.parent_switches=sum(abs(diff(r.parentSel(:,2:4),1,1))>0,'all');
+    % rate certificate: actual transported rate error against the carried bound W
+    Wc=r.certW(:,2:4);bad=0;cnt=0;
+    for k=1:K
+        [qr0,wr0]=isc_reference(r.t(k),c.referencePhase);
+        for i=2:4
+            if ~isfinite(Wc(k,i-1)),continue;end
+            qq=isc_math('exp',squeeze(r.att(k,:,i))');ww=squeeze(r.rate(k,:,i))';
+            qs=isc_math('mul',qr0,c.offsets(:,i));ws=isc_math('rot',c.offsets(:,i))'*wr0;
+            ee=norm(ww-isc_math('rot',qq)'*isc_math('rot',qs)*ws);
+            cnt=cnt+1;bad=bad+(ee>Wc(k,i-1)*(1+1e-9)+1e-12);
+        end
+    end
+    m.cert_rate_violation_fraction=bad/max(cnt,1);
+    if c.gat
+        Ec=r.certE(:,2:4);okE=isfinite(Ec);m.gat_guarantee_fraction=mean(Ec(okE)<=c.gatTol*(1+1e-9));
+        pre=repmat(r.t>=10 & r.t<c.faultStart,1,3)&okE;m.gat_guarantee_fraction_prefault=mean(Ec(pre)<=c.gatTol*(1+1e-9));
+        % same, restricted to samples where the terminal link carrying the parent's packets is locked
+        lk=false(K,3);
+        for i=2:4
+            pp=r.parentSel(:,i);
+            for k=1:K
+                e=find((c.edges(:,1)==pp(k)&c.edges(:,2)==i)|(c.edges(:,2)==pp(k)&c.edges(:,1)==i),1);
+                ep=2*e-1;if c.edges(e,1)~=pp(k),ep=2*e;end
+                lk(k,i-1)=r.lock(k,ep)>0;
+            end
+        end
+        okL=okE&lk;m.gat_guarantee_locked=mean(Ec(okL)<=c.gatTol*(1+1e-9));
+        okLp=okL&repmat(r.t>=10 & r.t<c.faultStart,1,3);m.gat_guarantee_locked_prefault=mean(Ec(okLp)<=c.gatTol*(1+1e-9));
+    end
 end
 end
