@@ -1,0 +1,12 @@
+23a24,25
+>     % PROPOSAL P1: exact solution of theta' = W + al*s + wbar*(theta + H), theta(0)=H.
+>     ex=@(x) exp(wbar*x)*Hs+(Ws+wbar*Hs)*expm1(wbar*x)/wbar+al*(expm1(wbar*x)-wbar*x)/wbar^2;
+25c27
+<         Eatt=exp(wbar*a)*(Hs*(1+wbar*a)+Ws*a+al*a^2/2);Erate=Ws+al*a+wbar*(Eatt+Hs);
+---
+>         Eatt=ex(a);Erate=Ws+al*a+wbar*(Eatt+Hs);
+27,28c29
+<         Eh=exp(wbar*hor)*(Hs*(1+wbar*hor)+Ws*hor+al*hor^2/2);
+<         Eatt=Eh+wbar*(a-hor);Erate=wbar;       % target frozen: desired rate is at most omegaMax
+---
+>         Eatt=ex(hor)+wbar*(a-hor);Erate=wbar;
