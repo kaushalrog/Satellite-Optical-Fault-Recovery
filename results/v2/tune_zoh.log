@@ -1,0 +1,27 @@
+TUNE zoh zohAngle=0.00015  pairRMS=0.5666 deg  bytes=237419
+TUNE zoh zohAngle=0.000225  pairRMS=0.5675 deg  bytes=176926
+TUNE zoh zohAngle=0.0003  pairRMS=0.5691 deg  bytes=141056
+TUNE zoh zohAngle=0.00045  pairRMS=0.5706 deg  bytes=97425
+TUNE zoh zohAngle=0.0006  pairRMS=0.5740 deg  bytes=75106
+TUNE zoh zohAngle=0.0009  pairRMS=0.5779 deg  bytes=53103
+TUNE zoh zohAngle=0.0012  pairRMS=0.5812 deg  bytes=43076
+TUNE zoh zohAngle=0.0018  pairRMS=0.5852 deg  bytes=36548
+TUNE zoh zohAngle=0.0024  pairRMS=0.5862 deg  bytes=36122
+
+ans =
+
+  9×4 table
+
+    method     value      pair_rms_deg    payload_bytes
+    ______    ________    ____________    _____________
+
+    "zoh"      0.00015      0.56663        2.3742e+05  
+    "zoh"     0.000225       0.5675        1.7693e+05  
+    "zoh"       0.0003       0.5691        1.4106e+05  
+    "zoh"      0.00045      0.57062             97425  
+    "zoh"       0.0006      0.57404             75106  
+    "zoh"       0.0009       0.5779             53103  
+    "zoh"       0.0012      0.58119             43076  
+    "zoh"       0.0018      0.58522             36548  
+    "zoh"       0.0024      0.58622             36122  
+

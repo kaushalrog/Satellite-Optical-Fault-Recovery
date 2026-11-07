@@ -1,3 +1,11 @@
+# IEEE Transactions revision — 7 November 2026 (branch `ieee-transactions-revision`)
+
+- Added a physical optical model (link budget, receiver noise, bit-error rate, RS(88,72) packet error, lock/acquisition state machine, two-stage terminal dynamics, tracking jitter); validated the budget against the published NASA TBIRD downlink budget (0.07 dB). Legacy optics preserved and regression-tested.
+- Added certified, link-aware coordination (CLAC) with a proved online error certificate; 0 violations in 560 held-out runs.
+- Added static, dynamic and self-triggered baselines, a star-tree baseline, an isolated-actuator case, multi-link, all-link and random-link fault cases.
+- New protocol with a SHA-256 lock (first lock superseded before any held-out result was read; see `docs/V2_PROTOCOL.md`), 2,520 held-out runs on new seeds 201–220, bootstrap analysis and an independent recomputation.
+- See `docs/V2_METHODS.md` and `REVISION_CHECKLIST.md`.
+
 # Recovery-audit revision — 22 October 2026
 
 ## Frozen rule and held-out statistical extension

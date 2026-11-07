@@ -16,14 +16,21 @@ s.sentQ=repmat([1;0;0;0],1,4); s.sentW=zeros(3,4);
 s.lastSend=-ones(1,4)*100;
 % One pending slot per directed edge. Delay < minimum periodic interval is
 % not required: each edge has a bounded 32-slot queue.
-s.queue=zeros(11,32,c.M); s.queueCount=zeros(1,c.M);
+s.queue=zeros(14,32,c.M); s.queueCount=zeros(1,c.M);
 s.attempts=zeros(1,4); s.deliveries=zeros(1,4);
 for a=1:c.M
     s.gimbal(:,a)=isc_target(s.q(:,c.sender(a)),c,a);
 end
+s.gimbalV=s.gimbal;s.lock=ones(1,c.M);s.lossTimer=zeros(1,c.M);s.acqTimer=zeros(1,c.M);
 if isfield(c,'task') && strcmp(c.task,'leader_tracking')
     s.holdQ=s.q;s.lastSendEdge=-100*ones(1,c.M);
     s.sentQEdge=repmat([1;0;0;0],1,c.M);s.sentWEdge=zeros(3,c.M);
     s.rateChange=1e6*ones(4,4); % finite sentinel: not enough delivered rate history
+    % Certified-coordination state (inert unless c.clac): bounds carried by packets
+    s.cachedBoundH=inf(4,4);s.cachedBoundW=inf(4,4);s.cachedParentId=zeros(4,4);
+    s.parent=c.parent;s.horizon=c.staleLimit*ones(1,4);s.Hnode=inf(1,4);s.Wnode=inf(1,4);
+    s.lastSwitch=-100*ones(1,4);s.switches=zeros(1,4);
+    for i=2:4,s.cachedParentId(i,c.parent(i))=c.parent(i);end
+    s.eta=zeros(1,c.M);s.nextSend=zeros(1,c.M);
 end
 end

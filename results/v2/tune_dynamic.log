@@ -1,0 +1,27 @@
+TUNE dynamic dynBase=7.5e-06  pairRMS=0.3517 deg  bytes=97566
+TUNE dynamic dynBase=1.5e-05  pairRMS=0.3544 deg  bytes=70511
+TUNE dynamic dynBase=3e-05  pairRMS=0.3592 deg  bytes=51017
+TUNE dynamic dynBase=5.25e-05  pairRMS=0.3626 deg  bytes=41169
+TUNE dynamic dynBase=7.5e-05  pairRMS=0.3647 deg  bytes=38135
+TUNE dynamic dynBase=0.0001125  pairRMS=0.3656 deg  bytes=36885
+TUNE dynamic dynBase=0.00015  pairRMS=0.3624 deg  bytes=36454
+TUNE dynamic dynBase=0.000225  pairRMS=0.3644 deg  bytes=36258
+TUNE dynamic dynBase=0.0003  pairRMS=0.3642 deg  bytes=36096
+
+ans =
+
+  9×4 table
+
+     method        value      pair_rms_deg    payload_bytes
+    _________    _________    ____________    _____________
+
+    "dynamic"      7.5e-06      0.35175           97566    
+    "dynamic"      1.5e-05      0.35438           70511    
+    "dynamic"        3e-05      0.35921           51017    
+    "dynamic"     5.25e-05      0.36262           41169    
+    "dynamic"      7.5e-05      0.36472           38135    
+    "dynamic"    0.0001125      0.36558           36885    
+    "dynamic"      0.00015      0.36243           36454    
+    "dynamic"     0.000225      0.36437           36258    
+    "dynamic"       0.0003      0.36416           36096    
+

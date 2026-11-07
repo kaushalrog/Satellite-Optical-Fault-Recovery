@@ -1,0 +1,25 @@
+TUNE self selfAccel=0.0004  pairRMS=0.3672 deg  bytes=36096
+TUNE self selfAccel=0.0008  pairRMS=0.3587 deg  bytes=44544
+TUNE self selfAccel=0.0012  pairRMS=0.3575 deg  bytes=57600
+TUNE self selfAccel=0.0016  pairRMS=0.3524 deg  bytes=64128
+TUNE self selfAccel=0.002  pairRMS=0.3519 deg  bytes=72192
+TUNE self selfAccel=0.0024  pairRMS=0.3519 deg  bytes=72192
+TUNE self selfAccel=0.0032  pairRMS=0.3514 deg  bytes=82560
+TUNE self selfAccel=0.0048  pairRMS=0.3482 deg  bytes=115200
+
+ans =
+
+  8×4 table
+
+    method    value     pair_rms_deg    payload_bytes
+    ______    ______    ____________    _____________
+
+    "self"    0.0004      0.36725             36096  
+    "self"    0.0008      0.35872             44544  
+    "self"    0.0012       0.3575             57600  
+    "self"    0.0016      0.35241             64128  
+    "self"     0.002      0.35195             72192  
+    "self"    0.0024      0.35195             72192  
+    "self"    0.0032      0.35141             82560  
+    "self"    0.0048      0.34821         1.152e+05  
+

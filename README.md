@@ -1,3 +1,5 @@
+> **IEEE Transactions revision (branch `ieee-transactions-revision`).** Physical optical model validated against NASA TBIRD published budget, certified link-aware coordination (CLAC), isolated-actuator and multi-link fault cases, nine-method comparison on 2,520 held-out runs. Start at [docs/V2_METHODS.md](docs/V2_METHODS.md); checklist in [REVISION_CHECKLIST.md](REVISION_CHECKLIST.md); results in `results/v2/REPORT.md`. Run `run_tests_v2` in MATLAB.
+
 # Satellite Optical Fault Recovery — Research V4
 
 A reproducible MATLAB simulation study of optical pointing diagnosis under time-varying gain, uncertain measurements and finite actuator-model uncertainty.

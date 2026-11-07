@@ -1,0 +1,6 @@
+quantity,value,source
+beam FWHM,380 urad,"measured on orbit, SPIE 2023 Sec. 3"
+closed-loop body pointing,<10 urad RMS,"ICSOS 2023 (nominal jitter used)"
+uplink tracking accuracy,20-35 urad RMS,"SPIE 2023 Sec. 2 (stress case 35 urad)"
+pull-in time,10-30 s,"SPIE 2023 Sec. 2 (stress cases 15 s)"
+FEC threshold structure,hard threshold in dBm,"SPIE 2023: about -38 dBm at 200 Gbps; modelled here by RS(88,72) PER=0.1"

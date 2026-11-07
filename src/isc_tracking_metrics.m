@@ -10,7 +10,10 @@ for k=1:K
         desired=isc_math('mul',qr,c.offsets(:,i));
         trace.commandError(k,i)=norm(isc_math('log',isc_math('mul',isc_math('conj',desired),q(:,i))));
         trace.leaderError(k,i)=norm(isc_math('log',isc_math('mul',isc_math('conj',common(:,1)),common(:,i))));
-        if i>1,trace.parentAge(k,i-1)=r.age(k,c.parent(i),i);end
+        if i>1
+            pp=c.parent(i);if isfield(r,'parentSel'),pp=r.parentSel(k,i);end
+            trace.parentAge(k,i-1)=r.age(k,pp,i);
+        end
     end
     for e=1:6
         i=c.edges(e,1);j=c.edges(e,2);
@@ -34,6 +37,7 @@ m.attempted_packets=sum(r.attempts,'all');m.delivered_packets=sum(r.deliveries,'
 % Explicit serialized state payload: 4 quaternion + 3 rate + 1 timestamp
 % doubles. Arrival time/routing IDs are simulator metadata, excluded here.
 m.state_payload_bytes=64*m.attempted_packets;
+if c.clac,m.state_payload_bytes=88*m.attempted_packets;end   % + two bounds and parent id
 m.control_effort_N2m2s=sum(r.torque.^2,'all')*c.dt;
 m.fault_saturation_fraction=mean(abs(r.torque(windows{2},:,:))>=c.umax*(1-1e-8),'all');
 m.affected_availability=r.metrics.affected_link_availability;
@@ -51,4 +55,11 @@ if any(valid)
     m.conditional_offset_rms_rad=sqrt(mean(sum(delta.^2,2)));
 else,m.conditional_offset_rms_rad=NaN;end
 m.affected_estimated_infeasible_fraction=mean(r.feasible(windows{2},1)==0);
+m.cert_violation_fraction=NaN;m.cert_tightness_median=NaN;m.parent_switches=0;
+if c.clac && isfield(r,'certH')
+    H=r.certH(:,2:4);E=trace.commandError(:,2:4);ok=isfinite(H);
+    m.cert_violation_fraction=mean(E(ok)>H(ok)*(1+1e-9)+1e-12);
+    ratio=E(ok)./H(ok);m.cert_tightness_median=median(ratio);
+    m.parent_switches=sum(abs(diff(r.parentSel(:,2:4),1,1))>0,'all');
+end
 end

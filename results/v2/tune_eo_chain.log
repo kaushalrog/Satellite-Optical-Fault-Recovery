@@ -1,0 +1,25 @@
+TUNE eo_chain eventScale=0.5  pairRMS=0.3787 deg  bytes=141756
+TUNE eo_chain eventScale=0.75  pairRMS=0.3881 deg  bytes=100518
+TUNE eo_chain eventScale=1  pairRMS=0.3974 deg  bytes=79782
+TUNE eo_chain eventScale=1.5  pairRMS=0.4155 deg  bytes=57715
+TUNE eo_chain eventScale=2  pairRMS=0.4255 deg  bytes=48213
+TUNE eo_chain eventScale=3  pairRMS=0.4376 deg  bytes=40337
+TUNE eo_chain eventScale=4  pairRMS=0.4396 deg  bytes=37845
+TUNE eo_chain eventScale=6  pairRMS=0.4430 deg  bytes=36557
+
+ans =
+
+  8×4 table
+
+      method      value    pair_rms_deg    payload_bytes
+    __________    _____    ____________    _____________
+
+    "eo_chain"     0.5       0.37871        1.4176e+05  
+    "eo_chain"    0.75       0.38807        1.0052e+05  
+    "eo_chain"       1       0.39743             79782  
+    "eo_chain"     1.5       0.41551             57715  
+    "eo_chain"       2       0.42547             48213  
+    "eo_chain"       3       0.43759             40337  
+    "eo_chain"       4       0.43962             37845  
+    "eo_chain"       6       0.44304             36557  
+

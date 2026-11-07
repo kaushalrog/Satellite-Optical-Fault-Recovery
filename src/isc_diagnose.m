@@ -29,7 +29,7 @@ if d.hcount>=max(12,round(0.75*n.samples))
             beta=X\z; offset=-n.divergence*beta(2:3)/4;
             gain=exp(beta(1)+2*sum(offset.^2)/n.divergence^2);
             fitError=sqrt(mean((X*beta-z).^2));
-            if fitError<0.06 && gain>0.02 && gain<1.3 && norm(offset)<2*n.divergence
+            if fitError<n.fitErrMax && gain>0.02 && gain<1.3 && norm(offset)<2*n.divergence
                 d.offset=offset;d.gain=gain;d.valid=1;
             end
         end

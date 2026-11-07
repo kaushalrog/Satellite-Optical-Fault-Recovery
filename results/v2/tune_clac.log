@@ -1,0 +1,15 @@
+TUNE clac clacSwitchRatio=0.4  pairRMS=0.1603 deg  bytes=76038
+TUNE clac clacSwitchRatio=0.6  pairRMS=0.1577 deg  bytes=76372
+TUNE clac clacSwitchRatio=0.8  pairRMS=0.1495 deg  bytes=76531
+
+ans =
+
+  3×4 table
+
+    method    value    pair_rms_deg    payload_bytes
+    ______    _____    ____________    _____________
+
+    "clac"     0.4       0.16026           76038    
+    "clac"     0.6       0.15767           76372    
+    "clac"     0.8        0.1495           76531    
+

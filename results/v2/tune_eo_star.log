@@ -1,0 +1,25 @@
+TUNE eo_star eventScale=0.5  pairRMS=0.3485 deg  bytes=118938
+TUNE eo_star eventScale=0.75  pairRMS=0.3507 deg  bytes=84390
+TUNE eo_star eventScale=1  pairRMS=0.3569 deg  bytes=66633
+TUNE eo_star eventScale=1.5  pairRMS=0.3644 deg  bytes=49310
+TUNE eo_star eventScale=2  pairRMS=0.3634 deg  bytes=42240
+TUNE eo_star eventScale=3  pairRMS=0.3632 deg  bytes=38336
+TUNE eo_star eventScale=4  pairRMS=0.3624 deg  bytes=37107
+TUNE eo_star eventScale=6  pairRMS=0.3638 deg  bytes=36356
+
+ans =
+
+  8×4 table
+
+     method      value    pair_rms_deg    payload_bytes
+    _________    _____    ____________    _____________
+
+    "eo_star"     0.5       0.34848        1.1894e+05  
+    "eo_star"    0.75       0.35067             84390  
+    "eo_star"       1       0.35692             66633  
+    "eo_star"     1.5       0.36439             49310  
+    "eo_star"       2       0.36339             42240  
+    "eo_star"       3       0.36324             38336  
+    "eo_star"       4       0.36237             37107  
+    "eo_star"       6       0.36385             36356  
+

@@ -1,0 +1,8 @@
+item,published,model,difference_dB
+Tx optical power (dBW),-0.5,-0.46,0.04
+Tx optics loss (dB),-0.3,-0.3,0
+Tx antenna gain (dBi),79,78.85,-0.15
+Tx pointing loss (dB),-0.2,-0.21,-0.01
+Range loss (dB/m^2),-130.4,-130.36,0.04
+Atmospheric loss (dB),-0.5,-0.5,0
+Rx irradiance (dB W/m^2),-52.9,-52.97,-0.07
